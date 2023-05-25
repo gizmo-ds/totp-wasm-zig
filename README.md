@@ -1,7 +1,7 @@
 # totp-wasm-zig
 
 [![License](https://img.shields.io/github/license/gizmo-ds/totp-wasm-zig?style=flat-square)](./LICENSE)
-[![CI](https://img.shields.io/github/actions/workflow/status/gizmo-ds/totp-wasm-zig/testing.yml?branch=main&label=docker%20image&style=flat-square)](https://github.com/gizmo-ds/totp-wasm-zig/actions/workflows/testing.yml)
+[![CI](https://img.shields.io/github/actions/workflow/status/gizmo-ds/totp-wasm-zig/testing.yml?branch=main&label=CI&style=flat-square)](https://github.com/gizmo-ds/totp-wasm-zig/actions/workflows/testing.yml)
 
 # Demo
 
