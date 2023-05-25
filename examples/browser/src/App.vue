@@ -23,8 +23,8 @@ const timestamp = () => Math.round(new Date().getTime() / 1000)
 function updateValue() {
   if (!initialized) return
   const t = BigInt(timestamp())
-  hotp_value = hotp(secret, BigInt(hotp_counter), digits).toString()
-  totp_value = totp(secret, t, digits, period).toString()
+  hotp_value = hotp(secret, BigInt(hotp_counter), digits).toString().padStart(6, '0')
+  totp_value = totp(secret, t, digits, period).toString().padStart(6, '0')
   steam_value = steam_guard(secret, t)
 }
 
