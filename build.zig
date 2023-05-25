@@ -77,7 +77,7 @@ const GenWasmDateStep = struct {
         const base64_encoder = std.base64.standard.Encoder;
         const wasmopt_out = try std.fs.path.join(alloc, &.{
             self.step.owner.build_root.path.?,
-            "packages/totp-wasm/totp-wasm.wasm",
+            "packages/totp-wasm/dist/totp-wasm.wasm",
         });
 
         const wasmfile = try std.fs.openFileAbsolute(wasmopt_out, .{ .mode = .read_only });
@@ -94,11 +94,11 @@ const GenWasmDateStep = struct {
 
         var wasmdata = std.ArrayList(u8).init(alloc);
         defer wasmdata.deinit();
-        try wasmdata.appendSlice("// @ts-nocheck wasmdata\nexport default \"");
+        try wasmdata.appendSlice("// @ts-nocheck wasmdata\nexport const wasm_data = \"");
         try wasmdata.appendSlice(encoded);
         try wasmdata.appendSlice("\";");
 
-        var wasmdata_file = std.fs.cwd().createFile("packages/totp-wasm/wasm_data.js", .{}) catch unreachable;
+        var wasmdata_file = std.fs.cwd().createFile("packages/totp-wasm/dist/wasm_data.js", .{}) catch unreachable;
         defer wasmdata_file.close();
         try wasmdata_file.writeAll(wasmdata.items);
     }
@@ -134,7 +134,7 @@ const OptimizeWasmStep = struct {
         });
         const output_file = try std.fs.path.join(owner.allocator, &.{
             owner.build_root.path.?,
-            "packages/totp-wasm/totp-wasm.wasm",
+            "packages/totp-wasm/dist/totp-wasm.wasm",
         });
 
         if (owner.findProgram(&.{"wasm-opt"}, &.{"node_modules/.bin"})) |opt| {
