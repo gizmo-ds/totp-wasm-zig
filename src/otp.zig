@@ -1,7 +1,5 @@
 const std = @import("std");
-const math = std.math;
 const testing = std.testing;
-const mem = std.mem;
 const Allocator = std.mem.Allocator;
 const HmacSha1 = std.crypto.auth.hmac.HmacSha1;
 
@@ -29,7 +27,7 @@ pub fn hotp(key: []const u8, counter: u64, digit: u32) u32 {
         @as(u32, bin_code[1]) << 16 |
         @as(u32, bin_code[0]) << 24 & 0x7FFFFFFF;
 
-    var code = int_code % (math.pow(u32, 10, digit));
+    var code = int_code % (std.math.pow(u32, 10, digit));
     return code;
 }
 
