@@ -3,9 +3,6 @@
 [![License](https://img.shields.io/github/license/gizmo-ds/totp-wasm-zig?style=flat-square)](./LICENSE)
 [![CI](https://img.shields.io/github/actions/workflow/status/gizmo-ds/totp-wasm-zig/testing.yml?branch=main&label=docker%20image&style=flat-square)](https://github.com/gizmo-ds/totp-wasm-zig/actions/workflows/testing.yml)
 
-> **Warning**  
-> This project is still in the early stage of development and is not ready for production use.
-
 # Requirements
 
 - [Zig](https://ziglang.org/)
