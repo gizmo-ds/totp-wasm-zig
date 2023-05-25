@@ -7,8 +7,5 @@
   "license": "MIT",
   "devDependencies": {
     "@types/node": "^20.2.3"
-  },
-  "dependencies": {
-    "esno": "^0.16.3"
   }
 }
