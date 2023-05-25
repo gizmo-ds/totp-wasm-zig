@@ -1,0 +1,4 @@
+{
+  "github": { "silent": true },
+  "outputDirectory": "examples/browser/dist"
+}
