@@ -1,0 +1,22 @@
+{
+  "name": "totp-wasm",
+  "version": "1.0.0",
+  "description": "HOTP & TOTP & Steam Guard ",
+  "main": "index.js",
+  "keywords": [],
+  "author": "Gizmo",
+  "license": "MIT",
+  "workspaces": [
+    "packages/totp-wasm",
+    "examples/node"
+  ],
+  "scripts": {
+    "build": "esbuild packages/totp-wasm/index.ts --bundle --format=esm --platform=node --target=es2017 --minify --outfile=packages/totp-wasm/index.js",
+    "build:wasm": "zig build && zig build bind",
+    "test:deno": "deno test -A --import-map examples/deno/deno.json examples/deno/mod.ts",
+    "test:node": "esno examples/node/index.ts"
+  },
+  "devDependencies": {
+    "esno": "^0.16.3"
+  }
+}

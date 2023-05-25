@@ -2,3 +2,5 @@ zig-out/
 zig-cache/
 
 .vscode/
+!.vscode/settings.json
+node_modules
