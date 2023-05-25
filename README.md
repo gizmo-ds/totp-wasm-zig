@@ -9,7 +9,7 @@
 
 # Requirements
 
-- [Zig](https://ziglang.org/)
+- [Zig](https://ziglang.org/) (0.11.0-dev.3295+7cb2e653a)
 - [Binaryen](https://github.com/WebAssembly/binaryen) (Optional but recommended)
 - [Node.js](https://nodejs.org) (Optional)
 
@@ -24,12 +24,6 @@ To reduce the size of the `.wasm` file, you can choose to install [Binaryen](htt
 ```fish
 zig build
 zig build bind
-```
-
-## Packaging the totp-wasm JavaScript bundle
-
-```fish
-npx esbuild packages/totp-wasm/index.ts --bundle --format=esm --platform=node --target=es2017 --minify --outfile=packages/totp-wasm/index.js
 ```
 
 # How to install Binaryen?
