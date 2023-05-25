@@ -8,6 +8,7 @@
   "license": "MIT",
   "workspaces": [
     "packages/totp-wasm",
+    "examples/browser",
     "examples/node"
   ],
   "scripts": {
