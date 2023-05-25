@@ -30,6 +30,13 @@ zig build bind
 
 You can download the latest release of Binaryen from [https://github.com/WebAssembly/binaryen/releases](https://github.com/WebAssembly/binaryen/releases). Once that's done, simply extract the compressed file somewhere. `wasm-opt` will be in the `bin` folder.
 
+# Related Projects
+
+Here are some related projects that you may find useful:
+
+- [totp-wasm](https://github.com/gizmo-ds/totp-wasm): Rust implementation of this project.
+- [UdonOTPLib](https://github.com/gizmo-ds/UdonOTPLib): C# implementation for the VRChat game.
+
 ## License
 
 Code is distributed under [MIT](./LICENSE) license, feel free to use it in your proprietary projects as well.
