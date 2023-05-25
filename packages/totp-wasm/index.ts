@@ -32,9 +32,24 @@ export function totp(secret: string, t: bigint, digit: number, period: number): 
   return code
 }
 
+export function steam_guard(secret: string, t: bigint): string {
+  if (!instance) return ''
+  const str = to_cstr(instance, memory, secret)
+  const steam_guard = instance.exports.steam_guard as steam_guard_func
+  const output_ptr = steam_guard(str.ptr, str.len, t)
+  const code = new TextDecoder().decode(new Uint8Array(memory.buffer, output_ptr, 5))
+  free(instance, str.ptr)
+  free(instance, output_ptr)
+  return code
+}
+
 interface hotp_func {
   (ptr: number, len: number, counter: bigint, digit: number): number
 }
 interface totp_func {
   (ptr: number, len: number, t: bigint, digit: number, period: number): number
+}
+
+interface steam_guard_func {
+  (ptr: number, len: number, t: bigint): number
 }

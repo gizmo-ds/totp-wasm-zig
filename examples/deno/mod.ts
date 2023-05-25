@@ -1,4 +1,4 @@
-import { init, wasm_data, totp, hotp } from 'totp-wasm'
+import { init, wasm_data, totp, hotp, steam_guard } from 'totp-wasm'
 import { assertEquals, base64Decode } from './deps.ts'
 
 await init(base64Decode(wasm_data))
@@ -23,5 +23,15 @@ Deno.test({
     const period = 30
     const code = totp(secret, t, digit, period)
     assertEquals(code, 473526)
+  },
+})
+
+Deno.test({
+  name: 'Steam Guard test',
+  fn() {
+    const secret = 'GM4VC2CQN5UGS33ZJJVWYUSFMQ4HOQJW'
+    const t = BigInt(1662681600)
+    const code = steam_guard(secret, t)
+    assertEquals(code, '4PRPM')
   },
 })

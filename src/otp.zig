@@ -61,7 +61,7 @@ test "totp test" {
 
 const STEAM_CHARS: *const [26:0]u8 = "23456789BCDFGHJKMNPQRTVWXY";
 
-pub fn steam_guard(secret: []const u8, t: i64) ![]u8 {
+pub fn steam_guard(secret: []const u8, t: i64) ![5]u8 {
     const alloc = std.heap.page_allocator;
     var counter = @intCast(u64, @divFloor(t, 30));
     var key = try base32.decode(alloc, secret);
@@ -96,7 +96,7 @@ pub fn steam_guard(secret: []const u8, t: i64) ![]u8 {
         bin_code[i] = STEAM_CHARS[(fc % STEAM_CHARS.len)];
         fc /= @intCast(u32, STEAM_CHARS.len);
     }
-    return bin_code[0..];
+    return bin_code;
 }
 
 test "Steam Guard test" {
@@ -104,5 +104,5 @@ test "Steam Guard test" {
     const t: i64 = 1662681600;
     const code = "4PRPM";
 
-    try testing.expectEqualSlices(u8, code[0..], try steam_guard(secret, t));
+    try testing.expectEqualSlices(u8, code[0..], (try steam_guard(secret, t))[0..]);
 }
