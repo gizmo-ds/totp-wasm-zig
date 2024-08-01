@@ -1,5 +1,0 @@
-{
-  "imports": {
-    "totp-wasm": "../../packages/totp-wasm/mod.ts"
-  }
-}
