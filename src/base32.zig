@@ -8,7 +8,7 @@ pub fn encode(alloc: Allocator, input: []const u8, padding: bool) ![]u8 {
     var output = try std.ArrayList(u8).initCapacity(alloc, (input.len + 3) / 4 * 5);
     defer output.deinit();
 
-    var chunks = try slice_chunks(u8, alloc, input, 5);
+    const chunks = try slice_chunks(u8, alloc, input, 5);
     defer alloc.free(chunks);
 
     for (chunks) |chunk| {
@@ -39,7 +39,7 @@ pub fn encode(alloc: Allocator, input: []const u8, padding: bool) ![]u8 {
 
 pub fn decode(alloc: Allocator, input: []const u8) ![]u8 {
     var unpad = input.len;
-    for (1..std.math.min(6, input.len) + 1) |i| {
+    for (1..@min(6, input.len) + 1) |i| {
         if (input[input.len - i] != '=') break;
         unpad -= 1;
     }
@@ -49,13 +49,13 @@ pub fn decode(alloc: Allocator, input: []const u8) ![]u8 {
     var output = try std.ArrayList(u8).initCapacity(alloc, (output_len + 4) / 5 * 5);
     defer output.deinit();
 
-    var chunks = try slice_chunks(u8, alloc, input, 8);
+    const chunks = try slice_chunks(u8, alloc, input, 8);
     defer alloc.free(chunks);
 
     for (chunks) |chunk| {
         var buf = [_]u8{0} ** 8;
         for (chunk, 0..) |b, ci| {
-            if (std.mem.indexOf(u8, RFC4648_ALPHABET, &[1]u8{b})) |v| buf[ci] = @intCast(u8, v);
+            if (std.mem.indexOf(u8, RFC4648_ALPHABET, &[1]u8{b})) |v| buf[ci] = @intCast(v);
         }
 
         try output.append((buf[0] << 3) | (buf[1] >> 2));
@@ -71,7 +71,7 @@ pub fn decode(alloc: Allocator, input: []const u8) ![]u8 {
 test "base32 encode test" {
     const alloc = std.heap.page_allocator;
 
-    var output = try encode(alloc, "Hello world", true);
+    const output = try encode(alloc, "Hello world", true);
     defer alloc.free(output);
 
     try testing.expectEqualSlices(u8, "JBSWY3DPEB3W64TMMQ======", output);
@@ -80,7 +80,7 @@ test "base32 encode test" {
 test "base32 decode test" {
     const alloc = std.heap.page_allocator;
 
-    var output = try decode(alloc, "JBSWY3DPEB3W64TMMQ======");
+    const output = try decode(alloc, "JBSWY3DPEB3W64TMMQ======");
     defer alloc.free(output);
 
     try testing.expectEqualSlices(u8, "Hello world", output);
@@ -105,7 +105,7 @@ fn slice_chunks(comptime T: type, alloc: Allocator, input: []const T, size: usiz
 test "slice_chunks test" {
     const alloc = std.heap.page_allocator;
 
-    var output = try slice_chunks(u8, alloc, "Hello", 3);
+    const output = try slice_chunks(u8, alloc, "Hello", 3);
     defer alloc.free(output);
 
     try testing.expectEqualSlices(u8, "Hel", output[0]);

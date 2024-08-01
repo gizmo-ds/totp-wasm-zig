@@ -10,7 +10,7 @@ Deno.test({
     const counter = BigInt(1662681600)
     const digit = 6
     const code = hotp(key, counter, digit)
-    assertEquals(code, 886679)
+    assertEquals(code, '886679')
   },
 })
 
@@ -22,7 +22,7 @@ Deno.test({
     const digit = 6
     const period = 30
     const code = totp(secret, t, digit, period)
-    assertEquals(code, 473526)
+    assertEquals(code, '473526')
   },
 })
 

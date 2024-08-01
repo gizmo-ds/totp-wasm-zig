@@ -3,34 +3,57 @@
 [![License](https://img.shields.io/github/license/gizmo-ds/totp-wasm-zig?style=flat-square)](./LICENSE)
 [![CI](https://img.shields.io/github/actions/workflow/status/gizmo-ds/totp-wasm-zig/testing.yml?branch=main&label=CI&style=flat-square)](https://github.com/gizmo-ds/totp-wasm-zig/actions/workflows/testing.yml)
 
-# Demo
+## Demo
 
 [https://totp-wasm-zig.vercel.app](https://totp-wasm-zig.vercel.app)
 
-# Requirements
+## Requirements
 
-- [Zig](https://ziglang.org/) (0.11.0-dev.3295+7cb2e653a)
+- [Zig](https://ziglang.org/download/) (0.13.0)
 - [Binaryen](https://github.com/WebAssembly/binaryen) (Optional but recommended)
 - [Node.js](https://nodejs.org) (Optional)
 
-# Build
+## Usage
 
-## Compiling WebAssembly
+### Deno
 
-To reduce the size of the `.wasm` file, you can choose to install [Binaryen](https://github.com/WebAssembly/binaryen).
+```typescript
+import { totp, init, wasm_data } from 'https://deno.land/x/totp_wasm/deno/mod.ts'
 
-[How to install Binaryen?](#how-to-install-binaryen)
+await init(wasm_data)
+const code = totp('GM4VC2CQN5UGS33ZJJVWYUSFMQ4HOQJW', 1662681600, 6, 30)
+console.log(code)
+// 473526
+```
+
+### Browser
+
+[example](./examples/browser)
+
+### Node.js
+
+[example](./examples/node)
+
+### Bun
+
+[example](./examples/bun)
+
+## Build
+
+### Compiling WebAssembly
+
+Requirements:
+
+- [Zig](https://ziglang.org/download/) (0.13.0)
+- [Node.js](https://nodejs.org) (Optional)
 
 ```fish
+# pnpm install
 zig build
 zig build bind
 ```
 
-# How to install Binaryen?
-
-You can download the latest release of Binaryen from [https://github.com/WebAssembly/binaryen/releases](https://github.com/WebAssembly/binaryen/releases). Once that's done, simply extract the compressed file somewhere. `wasm-opt` will be in the `bin` folder.
-
-# Related Projects
+## Related Projects
 
 Here are some related projects that you may find useful:
 

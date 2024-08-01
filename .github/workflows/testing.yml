@@ -18,7 +18,7 @@ jobs:
       - name: Setup Zig
         uses: goto-bus-stop/setup-zig@v2
         with:
-          version: 0.11.0-dev.3268+9d4d96ca9
+          version: '0.13.0'
 
       - name: Test
         run: zig build test
@@ -38,13 +38,12 @@ jobs:
       - name: Install pnpm
         uses: pnpm/action-setup@v2
         with:
-          version: 8.5.1
+          version: 9.6.0
 
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
           node-version: lts/*
-          cache: pnpm
 
       - name: Run tests
         run: |
@@ -59,11 +58,11 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Setup Deno
-        uses: denoland/setup-deno@v1.1.2
+        uses: denoland/setup-deno@v1
         with:
-          deno-version: v1.33.4
+          deno-version: v1.45.2
 
       - name: Run tests
         run: |
           deno run -A npm:esbuild packages/totp-wasm/index.ts --bundle --format=esm --platform=node --target=es2017 --minify --outfile=packages/totp-wasm/index.js
-          deno test -A --import-map examples/deno/deno.json examples/deno/mod.ts
+          deno test -A -c deno.json examples/deno/mod.ts

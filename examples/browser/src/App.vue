@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { watch, computed } from 'vue'
+import { watch, computed, ref } from 'vue'
 import { darkTheme } from 'naive-ui'
 import { UseDark } from '@vueuse/components'
 import { init, hotp, totp, steam_guard, wasm_url } from './totp'
@@ -8,46 +8,46 @@ import QrcodeVue from 'qrcode.vue'
 
 const searchParams = new URL(location.href).searchParams
 
-let initialized = $ref(false)
-let secret = $ref(searchParams.get('secret') ?? generateSecret())
-let hotp_counter = $ref(123456)
-let period = $ref(30)
-let digits = $ref(6)
+let initialized = ref(false)
+let secret = ref(searchParams.get('secret') ?? generateSecret())
+let hotp_counter = ref(123456)
+let period = ref(30)
+let digits = ref(6)
 
-let hotp_value = $ref('000000')
-let totp_value = $ref('000000')
-let steam_value = $ref('00000')
+let hotp_value = ref('000000')
+let totp_value = ref('000000')
+let steam_value = ref('00000')
 
 const timestamp = () => Math.round(new Date().getTime() / 1000)
 
 function updateValue() {
   if (!initialized) return
   const t = BigInt(timestamp())
-  hotp_value = hotp(secret, BigInt(hotp_counter), digits).toString().padStart(6, '0')
-  totp_value = totp(secret, t, digits, period).toString().padStart(6, '0')
-  steam_value = steam_guard(secret, t)
+  hotp_value.value = hotp(secret.value, BigInt(hotp_counter.value), digits.value).toString()
+  totp_value.value = totp(secret.value, t, digits.value, period.value).toString()
+  steam_value.value = steam_guard(secret.value, t)
 }
 
 init(fetch(wasm_url)).then(() => {
-  initialized = true
+  initialized.value = true
   updateValue()
 })
 
-let tr = $ref(period - (timestamp() % period))
-setInterval(() => (tr = period - (timestamp() % period)), 1000)
+let tr = ref(period.value - (timestamp() % period.value))
+setInterval(() => (tr.value = period.value - (timestamp() % period.value)), 1000)
 
-watch($$(tr), (v) => {
-  if (v === period) updateValue()
+watch(tr, (v) => {
+  if (v === period.value) updateValue()
 })
-watch($$(hotp_counter), () => updateValue())
-watch($$(secret), () => updateValue())
-watch($$(digits), () => updateValue())
-watch($$(period), () => updateValue())
+watch(hotp_counter, () => updateValue())
+watch(secret, () => updateValue())
+watch(digits, () => updateValue())
+watch(period, () => updateValue())
 
-let issuer = $ref('Example')
-let account = $ref('alice@google.com')
+let issuer = ref('Example')
+let account = ref('alice@google.com')
 const totp_uri = computed(() => {
-  const u = new URL(`otpauth://totp/${encodeURIComponent(issuer)}:${account}`)
+  const u = new URL(`otpauth://totp/${encodeURIComponent(issuer.value)}:${account.value}`)
   u.search = totpSearchParams({
     secret,
     algorithm: 'SHA1',

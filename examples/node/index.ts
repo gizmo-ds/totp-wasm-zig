@@ -11,7 +11,7 @@ async function test() {
     const counter = BigInt(1662681600)
     const digit = 6
     const code = hotp(key, counter, digit)
-    console.log(code === 886679)
+    console.log(code === '886679')
   }
   {
     const secret = 'GM4VC2CQN5UGS33ZJJVWYUSFMQ4HOQJW'
@@ -19,7 +19,7 @@ async function test() {
     const digit = 6
     const period = 30
     const code = totp(secret, t, digit, period)
-    console.log(code === 473526)
+    console.log(code === '473526')
   }
   {
     const secret = 'GM4VC2CQN5UGS33ZJJVWYUSFMQ4HOQJW'

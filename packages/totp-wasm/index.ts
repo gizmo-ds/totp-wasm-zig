@@ -14,21 +14,25 @@ export async function init(r: BufferSource | Response | PromiseLike<Response>) {
   instance = m.instance
 }
 
-export function hotp(key: string, counter: bigint, digit: number): number {
-  if (!instance) return 0
+export function hotp(key: string, counter: bigint, digit: number): string {
+  if (!instance) return ''
   const str = to_cstr(instance, memory, key)
   const hotp = instance.exports.hotp as hotp_func
-  const code = hotp(str.ptr, str.len, counter, digit)
+  const output_ptr = hotp(str.ptr, str.len, counter, digit)
+  const code = new TextDecoder().decode(new Uint8Array(memory.buffer, output_ptr, 6))
   free(instance, str.ptr)
+  free(instance, output_ptr)
   return code
 }
 
-export function totp(secret: string, t: bigint, digit: number, period: number): number {
-  if (!instance) return 0
+export function totp(secret: string, t: bigint, digit: number, period: number): string {
+  if (!instance) return ''
   const str = to_cstr(instance, memory, secret)
   const totp = instance.exports.totp as totp_func
-  const code = totp(str.ptr, str.len, t, digit, period)
+  const output_ptr = totp(str.ptr, str.len, t, digit, period)
+  const code = new TextDecoder().decode(new Uint8Array(memory.buffer, output_ptr, 6))
   free(instance, str.ptr)
+  free(instance, output_ptr)
   return code
 }
 

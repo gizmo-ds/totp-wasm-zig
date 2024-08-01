@@ -1,20 +1,21 @@
 const std = @import("std");
 
-pub fn build(b: *std.build.Builder) !void {
+pub fn build(b: *std.Build) !void {
     const target = b.standardTargetOptions(.{});
 
     const optimize = b.standardOptimizeOption(.{});
 
-    const wasm = b.addSharedLibrary(.{
+    const wasm = b.addExecutable(.{
         .name = "totp-wasm-zig",
-        .root_source_file = .{ .path = "src/main.zig" },
-        .target = .{
+        .root_source_file = b.path("src/main.zig"),
+        .target = b.resolveTargetQuery(.{
             .cpu_arch = .wasm32,
             .os_tag = .freestanding,
-            .abi = .musl,
-        },
+        }),
         .optimize = .ReleaseSmall,
     });
+
+    wasm.entry = .disabled;
     wasm.import_memory = true;
     wasm.rdynamic = true;
 
@@ -23,7 +24,7 @@ pub fn build(b: *std.build.Builder) !void {
     const test_step = b.step("test", "Run tests");
     {
         const otp_tests = b.addTest(.{
-            .root_source_file = .{ .path = "src/otp.zig" },
+            .root_source_file = b.path("src/otp.zig"),
             .target = target,
             .optimize = optimize,
         });
@@ -32,7 +33,7 @@ pub fn build(b: *std.build.Builder) !void {
     }
     {
         const base32_tests = b.addTest(.{
-            .root_source_file = .{ .path = "src/base32.zig" },
+            .root_source_file = b.path("src/base32.zig"),
             .target = target,
             .optimize = optimize,
         });
@@ -52,13 +53,13 @@ pub fn build(b: *std.build.Builder) !void {
 }
 
 const GenWasmDateStep = struct {
-    step: std.build.Step,
-    wasm: *std.build.Step.Compile,
+    step: std.Build.Step,
+    wasm: *std.Build.Step.Compile,
 
-    pub fn create(owner: *std.build.Builder, wasm: *std.build.Step.Compile) *GenWasmDateStep {
+    pub fn create(owner: *std.Build, wasm: *std.Build.Step.Compile) *GenWasmDateStep {
         const self = owner.allocator.create(GenWasmDateStep) catch unreachable;
         self.* = .{
-            .step = std.build.Step.init(.{
+            .step = std.Build.Step.init(.{
                 .id = .custom,
                 .name = "gen wasmdata",
                 .owner = owner,
@@ -69,10 +70,8 @@ const GenWasmDateStep = struct {
         return self;
     }
 
-    pub fn make(step: *std.build.Step, prog_node: *std.Progress.Node) anyerror!void {
-        _ = prog_node;
-
-        const self = @fieldParentPtr(GenWasmDateStep, "step", step);
+    pub fn make(step: *std.Build.Step, _: std.Progress.Node) anyerror!void {
+        const self: *GenWasmDateStep = @fieldParentPtr("step", step);
         const alloc = self.step.owner.allocator;
         const base64_encoder = std.base64.standard.Encoder;
         const wasmopt_out = try std.fs.path.join(alloc, &.{
@@ -84,11 +83,11 @@ const GenWasmDateStep = struct {
         defer wasmfile.close();
 
         const meta = try wasmfile.metadata();
-        var buf = try alloc.alloc(u8, meta.size());
+        const buf = try alloc.alloc(u8, meta.size());
         defer alloc.free(buf);
         _ = try wasmfile.readAll(buf);
 
-        var encoded = try alloc.alloc(u8, base64_encoder.calcSize(buf.len));
+        const encoded = try alloc.alloc(u8, base64_encoder.calcSize(buf.len));
         defer alloc.free(encoded);
         _ = base64_encoder.encode(encoded, buf);
 
@@ -105,13 +104,13 @@ const GenWasmDateStep = struct {
 };
 
 const OptimizeWasmStep = struct {
-    step: std.build.Step,
-    wasm: *std.build.Step.Compile,
+    step: std.Build.Step,
+    wasm: *std.Build.Step.Compile,
 
-    pub fn create(owner: *std.build.Builder, wasm: *std.build.Step.Compile) *OptimizeWasmStep {
+    pub fn create(owner: *std.Build, wasm: *std.Build.Step.Compile) *OptimizeWasmStep {
         const self = owner.allocator.create(OptimizeWasmStep) catch unreachable;
         self.* = .{
-            .step = std.build.Step.init(.{
+            .step = std.Build.Step.init(.{
                 .id = .custom,
                 .name = "optimize wasm",
                 .owner = owner,
@@ -122,15 +121,13 @@ const OptimizeWasmStep = struct {
         return self;
     }
 
-    pub fn make(step: *std.build.Step, prog_node: *std.Progress.Node) anyerror!void {
-        _ = prog_node;
-
-        const self = @fieldParentPtr(OptimizeWasmStep, "step", step);
+    pub fn make(step: *std.Build.Step, _: std.Progress.Node) anyerror!void {
+        const self: *OptimizeWasmStep = @fieldParentPtr("step", step);
         const owner = self.step.owner;
 
         const wasm_filename = try std.fs.path.join(owner.allocator, &.{
-            owner.lib_dir,
-            self.wasm.out_lib_filename,
+            owner.exe_dir,
+            self.wasm.out_filename,
         });
         const output_file = try std.fs.path.join(owner.allocator, &.{
             owner.build_root.path.?,
@@ -138,7 +135,7 @@ const OptimizeWasmStep = struct {
         });
 
         if (owner.findProgram(&.{"wasm-opt"}, &.{"node_modules/.bin"})) |opt| {
-            _ = owner.exec(&.{
+            _ = owner.run(&.{
                 opt,
                 "-Os",
                 "--strip-debug",
