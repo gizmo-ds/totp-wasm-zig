@@ -3,15 +3,11 @@
 [![License](https://img.shields.io/github/license/gizmo-ds/totp-wasm-zig?style=flat-square)](./LICENSE)
 [![CI](https://img.shields.io/github/actions/workflow/status/gizmo-ds/totp-wasm-zig/testing.yml?branch=main&label=CI&style=flat-square)](https://github.com/gizmo-ds/totp-wasm-zig/actions/workflows/testing.yml)
 
+HOTP([RFC 4226](https://tools.ietf.org/html/rfc4226)) & TOTP([RFC 6238](https://tools.ietf.org/html/rfc6238)) & Steam Guard TOTP
+
 ## Demo
 
 [https://totp-wasm-zig.vercel.app](https://totp-wasm-zig.vercel.app)
-
-## Requirements
-
-- [Zig](https://ziglang.org/download/) (0.13.0)
-- [Binaryen](https://github.com/WebAssembly/binaryen) (Optional but recommended)
-- [Node.js](https://nodejs.org) (Optional)
 
 ## Usage
 
@@ -47,10 +43,17 @@ Requirements:
 - [Zig](https://ziglang.org/download/) (0.13.0)
 - [Node.js](https://nodejs.org) (Optional)
 
-```fish
+```bash
 # pnpm install
 zig build
 zig build bind
+```
+
+## Runing examples
+
+```bash
+pnpm install
+pnpm test:browser
 ```
 
 ## Related Projects
