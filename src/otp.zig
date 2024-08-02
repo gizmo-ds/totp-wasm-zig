@@ -40,8 +40,7 @@ test "hotp test" {
     try testing.expectEqual(code, hotp(key, counter, digits));
 }
 
-pub fn totp(secret: []const u8, t: i64, digit: u32, period: u32) !u32 {
-    const alloc = std.heap.page_allocator;
+pub fn totp(alloc: std.mem.Allocator, secret: []const u8, t: i64, digit: u32, period: u32) !u32 {
     const counter = @divFloor(t, period);
     const data = try base32.decode(alloc, secret);
     defer alloc.free(data);
@@ -56,13 +55,12 @@ test "totp test" {
     const period: u32 = 30;
     const code: u32 = 473526;
 
-    try testing.expectEqual(code, try totp(secret, t, digits, period));
+    try testing.expectEqual(code, try totp(std.heap.page_allocator, secret, t, digits, period));
 }
 
 const STEAM_CHARS: *const [26:0]u8 = "23456789BCDFGHJKMNPQRTVWXY";
 
-pub fn steam_guard(secret: []const u8, t: i64) ![5]u8 {
-    const alloc = std.heap.page_allocator;
+pub fn steam_guard(alloc: std.mem.Allocator, secret: []const u8, t: i64) ![5]u8 {
     const counter: u64 = @intCast(@divFloor(t, 30));
     const key = try base32.decode(alloc, secret);
     defer alloc.free(key);
@@ -104,5 +102,5 @@ test "Steam Guard test" {
     const t: i64 = 1662681600;
     const code = "4PRPM";
 
-    try testing.expectEqualSlices(u8, code[0..], (try steam_guard(secret, t))[0..]);
+    try testing.expectEqualSlices(u8, code[0..], (try steam_guard(std.heap.page_allocator, secret, t))[0..]);
 }

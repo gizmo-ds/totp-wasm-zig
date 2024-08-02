@@ -4,29 +4,17 @@ const allocator = std.heap.wasm_allocator;
 
 const otp = @import("./otp.zig");
 
-export fn hotp(key_ptr: [*]const u8, key_len: usize, counter: u64, digits: u32) [*]u8 {
-    const code = otp.hotp(key_ptr[0..key_len], counter, digits);
-    const str = std.fmt.allocPrint(
-        allocator,
-        "{d:0>6}",
-        .{code},
-    ) catch @panic("hotp: std.fmt.allocPrint");
-    return str[0..].ptr;
+export fn hotp(key_ptr: [*]const u8, key_len: usize, counter: u64, digits: u32) u32 {
+    return otp.hotp(key_ptr[0..key_len], counter, digits);
 }
 
-export fn totp(secret_ptr: [*]const u8, secret_len: usize, t: i64, digit: u32, period: u32) [*]u8 {
-    const code = otp.totp(secret_ptr[0..secret_len], t, digit, period) catch @panic("totp: totp");
-    const str = std.fmt.allocPrint(
-        allocator,
-        "{d:0>6}",
-        .{code},
-    ) catch @panic("totp: std.fmt.allocPrint");
-    return str[0..].ptr;
+export fn totp(secret_ptr: [*]const u8, secret_len: usize, t: i64, digit: u32, period: u32) u32 {
+    return otp.totp(allocator, secret_ptr[0..secret_len], t, digit, period) catch @panic("failed to generate totp code");
 }
 
 export fn steam_guard(secret_ptr: [*]const u8, secret_len: usize, t: i64) [*]u8 {
-    var code = otp.steam_guard(secret_ptr[0..secret_len], t) catch @panic("steam_guard: steam_guard");
-    const output: []u8 = allocator.alloc(u8, 5) catch @panic("steam_guard: allocator.alloc");
+    var code = otp.steam_guard(allocator, secret_ptr[0..secret_len], t) catch @panic("failed to generate steam guard code");
+    const output: []u8 = allocator.alloc(u8, 5) catch @panic("failed to allocate memory");
     @memcpy(output[0..5], code[0..5]);
     return output[0..5 :0].ptr;
 }

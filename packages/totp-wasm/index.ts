@@ -18,22 +18,18 @@ export function hotp(key: string, counter: bigint, digit: number): string {
   if (!instance) return ''
   const str = to_cstr(instance, memory, key)
   const hotp = instance.exports.hotp as hotp_func
-  const output_ptr = hotp(str.ptr, str.len, counter, digit)
-  const code = new TextDecoder().decode(new Uint8Array(memory.buffer, output_ptr, 6))
+  const code = hotp(str.ptr, str.len, counter, digit)
   free(instance, str.ptr)
-  free(instance, output_ptr)
-  return code
+  return code.toString().padStart(digit, '0')
 }
 
 export function totp(secret: string, t: bigint, digit: number, period: number): string {
   if (!instance) return ''
   const str = to_cstr(instance, memory, secret)
   const totp = instance.exports.totp as totp_func
-  const output_ptr = totp(str.ptr, str.len, t, digit, period)
-  const code = new TextDecoder().decode(new Uint8Array(memory.buffer, output_ptr, 6))
+  const code = totp(str.ptr, str.len, t, digit, period)
   free(instance, str.ptr)
-  free(instance, output_ptr)
-  return code
+  return code.toString().padStart(digit, '0')
 }
 
 export function steam_guard(secret: string, t: bigint): string {
